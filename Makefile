@@ -1,10 +1,16 @@
 inventory ?= github-ci.yml
 
+install-plugins:
+	ansible-galaxy collection install community.general
+	ansible-galaxy install stackhpc.libvirt-vm
+	ansible-galaxy collection install community.libvirt
 lint:
 	pip3 install "ansible-lint"
 	ansible-lint playbooks/*.yml roles/*.yml
 hostname-check:
 	ansible-playbook -i inventory/$(inventory) playbooks/get-hostname.yml
+cluster:
+	ansible-playbook -i inventory/$(inventory) playbooks/provision-cluster.yml
 local-test-target:
 	multipass launch --cpus 2 --mem 8G --disk 32G --name ansible 20.04
 stop-local:

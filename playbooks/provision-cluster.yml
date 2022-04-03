@@ -1,0 +1,52 @@
+---
+- name: Provision Cluster
+  hosts: hypervisor
+  become: true
+  pre_tasks:
+    - name: "Install Required Packages"
+      ansible.builtin.package:
+       name:
+        - qemu-kvm
+        - libvirt-daemon-system
+        - libvirt-clients
+        - bridge-utils
+    - name: Get Username
+      command: whoami
+      changed_when: false
+      become: false
+      register: whoami
+    - name: Add the user to libvirt and kvm groups
+      ansible.builtin.user:
+        name: "{{ whoami.stdout }}"
+        groups: kvm,libvirt
+        append: yes
+  roles:
+    - role: stackhpc.libvirt-vm
+      libvirt_vm_engine: kvm
+      libvirt_vms:
+        - state: present
+          name: 'master1'
+          memory_mb: 2048
+          vcpus: 1
+          volumes:
+            - name: 'data1'
+              device: 'disk'
+              format: 'qcow2'
+              capacity: '12GB'
+              pool: 'k8s'
+          interfaces:
+            - network: 'br-k8s'
+        - state: present
+          name: 'worker1'
+          memory_mb: 4196
+          vcpus: 2
+          volumes:
+            - name: 'data2'
+              device: 'disk'
+              format: 'qcow2'
+              capacity: '12GB'
+              pool: 'k8s'
+          interfaces:
+            - type: 'bridge'
+              source:
+                dev: 'br-k8s'
