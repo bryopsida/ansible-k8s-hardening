@@ -1,0 +1,14 @@
+all:
+  children:
+    hypervisor:
+      hosts:
+        localhost:
+    masters:
+      hosts:
+        master1.local:
+        master2.local:
+    workers:
+      hosts:
+        worker1.local:
+        worker2.local:
+        worker3.local:

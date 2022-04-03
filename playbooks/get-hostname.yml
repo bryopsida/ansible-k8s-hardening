@@ -1,0 +1,13 @@
+# get the hostname from all the hosts, use groups to filter out the masters and workers if not provisioned yet
+---
+- name: Get Hostnames
+  hosts: hypervisor
+
+  tasks:
+  - name: Get Hostname
+    shell: hostname
+    register: hostname
+    changed_when: false
+  - name: Echo Hostname
+    debug:
+      msg: "{{ hostname.stdout }}"

@@ -1,0 +1,20 @@
+name: K8s Hardening Workflow
+on:
+  push:
+jobs:
+  lint:
+    name: 'Lint'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        make lint
+  do-it:
+    name: 'Do It'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
+    # verify the ansible connection
+    - name: 'Get Hostname'
+      run: make hostname-check
+
