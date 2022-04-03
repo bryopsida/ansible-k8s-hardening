@@ -24,8 +24,8 @@ jobs:
     - name: 'Provision Cluster'
       run: make cluster
     # harden the security policy of the cluster
-    # - name: 'Fix Kube-Bench Findings'
-    #   run: make cis-compliant
+    - name: 'Fix Kube-Bench Findings'
+      run: make cis-compliant
     # - name: 'Enable audit logging'
     #   run: make audit-logging
     # - name: 'Install and configure Falco'
