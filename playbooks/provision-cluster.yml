@@ -15,6 +15,7 @@
       - apt-transport-https
       - ca-certificates
       - curl
+      - runc
       - containerd
       - bridge-utils
       state: latest
