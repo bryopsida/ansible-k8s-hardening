@@ -8,6 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
+        make install-plugins
         make lint
   test:
     name: 'Test'
