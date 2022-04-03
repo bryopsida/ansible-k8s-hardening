@@ -1,0 +1,42 @@
+name: K8s Hardening Workflow
+on:
+  push:
+jobs:
+  lint:
+    name: 'Lint'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        make install-plugins
+        make lint
+  test:
+    name: 'Test'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Install Ansible Plugins'
+      run: make install-plugins
+    # verify the ansible connection
+    - name: 'Get Hostname'
+      run: make hostname-check
+    # create VMs and a basic kubeadm cluster
+    - name: 'Provision Cluster'
+      run: make cluster
+    # harden the security policy of the cluster
+    - name: 'Fix Kube-Bench Findings'
+      run: make cis-compliant
+    - name: 'Enable audit logging'
+      run: make audit-logging
+    - name: 'Install and configure Falco'
+      run: make falco
+    - name: 'Install and configure SysDig'
+      run: make sysdig
+    - name: 'Install and configure AppArmor'
+      run: make apparmor
+    - name: 'Install and configure GVisor'
+      run: make gvisor
+    - name: 'Install and configure Gatekeeper'
+      run: make gatekeeper
+    - name: 'STIG it'
+      run: make stig
