@@ -3,6 +3,7 @@ inventory ?= github-ci.yml
 install-plugins:
 	ansible-galaxy collection install community.general
 	ansible-galaxy install stackhpc.libvirt-vm
+	ansible-galaxy install stackhpc.libvirt-host
 	ansible-galaxy collection install community.libvirt
 lint:
 	pip3 install "ansible-lint"
