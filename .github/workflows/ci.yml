@@ -10,8 +10,8 @@ jobs:
     - run: |
         make install-plugins
         make lint
-  test:
-    name: 'Test'
+  kubeadm-single-node:
+    name: 'K'
     runs-on: 'ubuntu-latest'
     steps:
     - uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
     # verify the ansible connection
     - name: 'Get Hostname'
       run: make hostname-check
-    # create VMs and a basic kubeadm cluster
+    # Provision single node cluster with kubeadm
     - name: 'Provision Cluster'
       run: make cluster
     # harden the security policy of the cluster

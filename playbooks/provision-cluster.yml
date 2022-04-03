@@ -2,64 +2,30 @@
 - name: Provision Cluster
   hosts: hypervisor
   become: true
-  pre_tasks:
-    - name: "Install Required Packages"
-      ansible.builtin.package:
-       update_cache: yes
-       name:
-        - qemu-kvm
-        - libvirt-daemon-system
-        - libvirt-clients
-        - bridge-utils
-    - name: Get Username
-      command: whoami
-      changed_when: false
-      become: false
-      register: whoami
-    - name: Add the user to libvirt and kvm groups
-      ansible.builtin.user:
-        name: "{{ whoami.stdout }}"
-        groups: kvm,libvirt
-        append: yes
-  roles:
-    - role: stackhpc.libvirt-host
-      libvirt_host_pools:
-        - name: k8s-pool
-          type: dir
-          path: /var/libvirt/k8s-pool
-          mode: 755
-          owner: "{{ ansible_user_id }}"
-          group: "{{ ansible_user_id }}"
-      libvirt_host_networks:
-        - name: br-k8s
-          mode: bridge
-          bridge: br-k8s
-    - role: stackhpc.libvirt-vm
-      libvirt_vm_engine: kvm
-      libvirt_vms:
-        - state: present
-          name: 'master1'
-          memory_mb: 2048
-          vcpus: 1
-          volumes:
-            - name: 'data1'
-              device: 'disk'
-              format: 'qcow2'
-              capacity: '12GB'
-              pool: 'k8s-pool'
-          interfaces:
-            - network: 'br-k8s'
-        - state: present
-          name: 'worker1'
-          memory_mb: 4196
-          vcpus: 2
-          volumes:
-            - name: 'data2'
-              device: 'disk'
-              format: 'qcow2'
-              capacity: '12GB'
-              pool: 'k8s-pool'
-          interfaces:
-            - type: 'bridge'
-              source:
-                dev: 'br-k8s'
+  tasks:
+  - name: Install Base Packages
+    package:
+      update_cache: yes
+      name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      state: latest
+  - name: Add Kube Repo Key
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+      state: present
+  - name: Add Kube Repo
+    apt_repository:
+      repo: 'deb  [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main'
+      state: present
+  - name: Install Kubernetes Binaries
+    package:
+      update_cache: yes
+      name:
+      - kubelet
+      - kubeadm
+      - kubectl
+      state: latest
+  - name: Initialize 
