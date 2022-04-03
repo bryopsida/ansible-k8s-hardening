@@ -6,7 +6,7 @@ install-plugins:
 	ansible-galaxy collection install community.libvirt
 lint:
 	pip3 install "ansible-lint"
-	ansible-lint playbooks/*.yml roles/*.yml
+	ansible-lint playbooks/*.yml
 hostname-check:
 	ansible-playbook -i inventory/$(inventory) playbooks/get-hostname.yml
 cluster:
