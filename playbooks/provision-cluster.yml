@@ -55,7 +55,7 @@
       path: /etc/kubernetes/admin.conf
     register: k8s_cluster_init
   - name: Initialize Kubernetes Cluster
-    shell: kubeadm init
+    shell: kubeadm init --cri /run/containerd/containerd.sock
     when: (not k8s_cluster_init.stat.exists)
   - name: Create .kube directory
     file:
