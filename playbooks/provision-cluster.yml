@@ -33,6 +33,14 @@
       name: net.bridge.bridge-nf-call-ip6tables
       value: 1
       state: present
+  - name: Disable SWAP
+    shell: |
+      swapoff -a
+  - name: Disable Mounting SWAP
+    replace:
+      path: /etc/fstab
+      regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+      replace: '# \1'
   - name: Add Kube Repo Key
     apt_key:
       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
