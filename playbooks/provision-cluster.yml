@@ -28,4 +28,3 @@
       - kubeadm
       - kubectl
       state: latest
-  - name: Initialize 
