@@ -3,6 +3,7 @@ all:
     hypervisor:
       hosts:
         localhost:
+         ansible_connection: local
     masters:
       hosts:
         master1.local:
