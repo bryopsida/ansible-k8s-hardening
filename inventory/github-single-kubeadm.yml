@@ -6,7 +6,9 @@ all:
          ansible_connection: local
     masters:
       hosts:
-        master1.local:
+        localhost:
+         ansible_connection: local
     workers:
       hosts:
-        worker1.local:
+        localhost:
+         ansible_connection: local

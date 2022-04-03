@@ -1,0 +1,9 @@
+---
+- name: Get Kube Bench Results
+  hosts: '*'
+  tasks:
+  - name: Run kube-bench
+    become: true
+    shell: kube-bench --json --exit-code=1
+    register: benchmarks
+    changed_when: false

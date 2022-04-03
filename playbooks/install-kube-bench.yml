@@ -1,0 +1,23 @@
+# TODO: improve by being version aware as a variable, should take a version and ensure that version of kube-bench is installed
+---
+- name: Install Kube-Bench
+  hosts: '*'
+  tasks:
+  - name: Gather package facts
+    package_facts:
+  - name: Override Aarch64 Name
+    set_fact:
+      ansible_architecture: arm64
+    when: "ansible_architecture == 'aarch64'"
+  - name: Download package
+    ansible.builtin.get_url:
+      url:  https://github.com/aquasecurity/kube-bench/releases/download/v0.6.7/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
+      dest: /tmp/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
+    when: "'kube-bench' not in ansible_facts.packages"
+  - name: Install package
+    become: true
+    apt:
+      deb: /tmp/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
+      state: present
+    when: "'kube-bench' not in ansible_facts.packages"
+

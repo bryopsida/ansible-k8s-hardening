@@ -5,7 +5,7 @@ all:
         ansible.local:
     masters:
       hosts:
-        master1.local:
+        ansible.local:
     workers:
       hosts:
-        worker1.local:
+        ansible.local:

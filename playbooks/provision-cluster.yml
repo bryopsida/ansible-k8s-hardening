@@ -3,6 +3,11 @@
   hosts: hypervisor
   become: true
   tasks:
+  - name: Get username
+    shell: whoami
+    register: username
+    changed_when: false
+    become: false
   - name: Install Base Packages
     package:
       update_cache: yes
@@ -10,7 +15,23 @@
       - apt-transport-https
       - ca-certificates
       - curl
+      - containerd
+      - bridge-utils
       state: latest
+  - name: Enable bridge net filter
+    community.general.modprobe:
+      name: br_netfilter
+      state: present
+  - name: Setup Ipv4 Forwarding
+    sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      state: present
+  - name: Setup Ipv6 Forwarding
+    sysctl:
+      name: net.bridge.bridge-nf-call-ip6tables
+      value: 1
+      state: present
   - name: Add Kube Repo Key
     apt_key:
       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
@@ -28,3 +49,22 @@
       - kubeadm
       - kubectl
       state: latest
+  - name: Check if cluster already exists
+    stat:
+      path: /etc/kubernetes/admin.conf
+    register: k8s_cluster_init
+  - name: Initialize Kubernetes Cluster
+    shell: kubeadm init
+    when: (not k8s_cluster_init.stat.exists)
+  - name: Create .kube directory
+    file:
+      path: /home/{{ username.stdout }}/.kube
+      state: directory
+  - name: Copy Cluster Configuration
+    copy:
+      remote_src: true
+      src: /etc/kubernetes/admin.conf
+      dest: /home/{{ username.stdout }}/.kube/config
+      owner: "{{ username.stdout }}"
+      group: "{{ username.stdout }}"
+      mode: 0644

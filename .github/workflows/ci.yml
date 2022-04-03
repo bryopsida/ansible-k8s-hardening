@@ -24,19 +24,19 @@ jobs:
     - name: 'Provision Cluster'
       run: make cluster
     # harden the security policy of the cluster
-    - name: 'Fix Kube-Bench Findings'
-      run: make cis-compliant
-    - name: 'Enable audit logging'
-      run: make audit-logging
-    - name: 'Install and configure Falco'
-      run: make falco
-    - name: 'Install and configure SysDig'
-      run: make sysdig
-    - name: 'Install and configure AppArmor'
-      run: make apparmor
-    - name: 'Install and configure GVisor'
-      run: make gvisor
-    - name: 'Install and configure Gatekeeper'
-      run: make gatekeeper
-    - name: 'STIG it'
-      run: make stig
+    # - name: 'Fix Kube-Bench Findings'
+    #   run: make cis-compliant
+    # - name: 'Enable audit logging'
+    #   run: make audit-logging
+    # - name: 'Install and configure Falco'
+    #   run: make falco
+    # - name: 'Install and configure SysDig'
+    #   run: make sysdig
+    # - name: 'Install and configure AppArmor'
+    #   run: make apparmor
+    # - name: 'Install and configure GVisor'
+    #   run: make gvisor
+    # - name: 'Install and configure Gatekeeper'
+    #   run: make gatekeeper
+    # - name: 'STIG it'
+    #   run: make stig
