@@ -1,0 +1,6 @@
+language: generic
+sudo: true
+script:
+  - make install-plugins
+  - make hostname-check
+  - make cluster
