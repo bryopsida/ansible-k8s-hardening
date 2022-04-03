@@ -5,6 +5,7 @@
   pre_tasks:
     - name: "Install Required Packages"
       ansible.builtin.package:
+       update_cache: yes
        name:
         - qemu-kvm
         - libvirt-daemon-system
