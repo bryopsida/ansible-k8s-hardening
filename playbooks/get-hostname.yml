@@ -5,9 +5,9 @@
 
   tasks:
   - name: Get Hostname
-    shell: hostname
+    ansible.builtin.command: hostname
     register: hostname
     changed_when: false
   - name: Echo Hostname
-    debug:
+    ansible.builtin.debug:
       msg: "{{ hostname.stdout }}"

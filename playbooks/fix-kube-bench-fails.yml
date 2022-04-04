@@ -4,16 +4,17 @@
   become: true
   tasks:
   - name: Create etcd group
-    group:
+    ansible.builtin.group:
       name: etcd
   - name: Create etcd user
-    user:
+    ansible.builtin.user:
       name: etcd
       group: etcd
     when: "'etcd' not in groups"
   - name: Fix etcd folder ownership
-    file:
+    ansible.builtin.file:
       path: /var/lib/etcd
       state: directory
       owner: etcd
       group: etcd
+      mode: 0600

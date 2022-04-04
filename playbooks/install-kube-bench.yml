@@ -4,24 +4,24 @@
   hosts: '*'
   tasks:
   - name: Gather package facts
-    package_facts:
+    ansible.builtin.package_facts:
   - name: Override Aarch64 Name
-    set_fact:
+    ansible.builtin.set_fact:
       ansible_architecture: arm64
     when: "ansible_architecture == 'aarch64'"
   - name: Override x86_64 Name
-    set_fact:
+    ansible.builtin.set_fact:
       ansible_architecture: amd64
     when: "ansible_architecture == 'x86_64'"
   - name: Download package
     ansible.builtin.get_url:
-      url:  https://github.com/aquasecurity/kube-bench/releases/download/v0.6.7/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
+      url: https://github.com/aquasecurity/kube-bench/releases/download/v0.6.7/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
       dest: /tmp/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
+      mode: 0600
     when: "'kube-bench' not in ansible_facts.packages"
   - name: Install package
     become: true
-    apt:
+    ansible.builtin.apt:
       deb: /tmp/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
       state: present
     when: "'kube-bench' not in ansible_facts.packages"
-
