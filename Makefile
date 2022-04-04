@@ -1,4 +1,5 @@
 inventory ?= github-single-kubeadm.yml
+PYTHON_VERSION ?= `python3 -c 'import platform; print(".".join(platform.python_version_tuple()[0:2]))'`
 
 install-plugins:
 	ansible-galaxy collection install community.general
@@ -8,8 +9,7 @@ install-plugins:
 	ansible-galaxy collection install ansible.posix
 	ansible-galaxy collection install community.kubernetes
 	ansible-galaxy collection install kubernetes.core
-	pip3 install kubernetes
-	pip3 install openshift
+	python3 -m pip install kubernetes
 lint:
 	pip3 install "ansible-lint"
 	ansible-lint playbooks/*.yml

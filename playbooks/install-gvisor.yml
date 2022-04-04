@@ -38,12 +38,20 @@
       update_cache: true
       name: runsc
       state: present
+  - name: Check Runtime Class
+    become: false
+    ansible.builtin.command: kubectl get runtimeclasses -o name
+    register: runtimeclass
+    changed_when: false
+  - name: Copy Runsc Runtime Class
+    become: false
+    copy:
+      src: ./files/gvisor.yml
+      dest: /tmp/gvisor.yml
+      mode: 0400
+    when: "'runtimeclass.node.k8s.io/gvisor' not in runtimeclass.stdout"
   - name: Create gvisor runtime class
-    kubernetes.core.k8s:
-      state: present
-      definition:
-        apiVersion: node.k8s.io/v1
-        kind: RuntimeClass
-        metadata:
-          name: gvisor
-        handler: runsc
+    become: false
+    ansible.builtin.command: kubectl apply -f /tmp/gvisor.yml
+    when: "'runtimeclass.node.k8s.io/gvisor' not in runtimeclass.stdout"
+
