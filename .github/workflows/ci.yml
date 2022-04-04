@@ -23,6 +23,8 @@ jobs:
     # Provision single node cluster with kubeadm
     - name: 'Provision Cluster'
       run: make cluster
+    - name: 'Install and configure GVisor'
+      run: make gvisor
     # harden the security policy of the cluster
     - name: 'Fix Kube-Bench Findings'
       run: make cis-compliant
@@ -34,8 +36,7 @@ jobs:
     #   run: make sysdig
     # - name: 'Install and configure AppArmor'
     #   run: make apparmor
-    # - name: 'Install and configure GVisor'
-    #   run: make gvisor
+
     # - name: 'Install and configure Gatekeeper'
     #   run: make gatekeeper
     # - name: 'STIG it'
