@@ -9,6 +9,10 @@
     set_fact:
       ansible_architecture: arm64
     when: "ansible_architecture == 'aarch64'"
+  - name: Override x86_64 Name
+    set_fact:
+      ansible_architecture: amd64
+    when: "ansible_architecture == 'x86_64'"
   - name: Download package
     ansible.builtin.get_url:
       url:  https://github.com/aquasecurity/kube-bench/releases/download/v0.6.7/kube-bench_0.6.7_linux_{{ ansible_architecture }}.deb
