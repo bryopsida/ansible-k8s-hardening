@@ -63,7 +63,7 @@
       path: /etc/kubernetes/admin.conf
     register: k8s_cluster_init
   - name: Initialize Kubernetes Cluster
-    shell: kubeadm init --cri-socket /run/containerd/containerd.sock
+    shell: kubeadm init --cri-socket /run/containerd/containerd.sock --pod-network-cidr=192.168.0.0/16
     when: (not k8s_cluster_init.stat.exists)
   - name: Create .kube directory
     file:
@@ -77,3 +77,10 @@
       owner: "{{ username.stdout }}"
       group: "{{ username.stdout }}"
       mode: 0644
+  # TODO: version the calico install appropriately, use ansible modules
+  - name: Install Calico Tigera Operator
+    become: false
+    shell: kubectl apply -f https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml
+  - name: Install Calico CRDS
+    become: false
+    shell: kubectl apply -f https://projectcalico.docs.tigera.io/manifests/custom-resources.yaml

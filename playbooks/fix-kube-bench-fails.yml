@@ -1,0 +1,19 @@
+---
+- name: Fix Kube-Bench Findings For Master Nodes
+  hosts: 'masters'
+  become: true
+  tasks:
+  - name: Create etcd group
+    group:
+      name: etcd
+  - name: Create etcd user
+    user:
+      name: etcd
+      group: etcd
+    when: "'etcd' not in groups"
+  - name: Fix etcd folder ownership
+    file:
+      path: /var/lib/etcd
+      state: directory
+      owner: etcd
+      group: etcd
