@@ -27,7 +27,7 @@
       mode: 0600
     when: "not key_stat.stat.exists"
   - name: Dearmor gvisor gpg key
-    ansible.builtin.shell: set -o pipefail && cat /tmp/gvisor-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/gvisor-archive-keyring.gpg
+    ansible.builtin.shell: cat /tmp/gvisor-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/gvisor-archive-keyring.gpg # noqa: risky-shell-pipe
     when: "not key_stat.stat.exists"
   - name: Add Gvisor Repo
     ansible.builtin.apt_repository:
