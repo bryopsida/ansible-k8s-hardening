@@ -45,7 +45,7 @@
     changed_when: false
   - name: Copy Runsc Runtime Class
     become: false
-    copy:
+    ansible.builtin.copy:
       src: ./files/gvisor.yml
       dest: /tmp/gvisor.yml
       mode: 0400
@@ -54,4 +54,3 @@
     become: false
     ansible.builtin.command: kubectl apply -f /tmp/gvisor.yml
     when: "'runtimeclass.node.k8s.io/gvisor' not in runtimeclass.stdout"
-
