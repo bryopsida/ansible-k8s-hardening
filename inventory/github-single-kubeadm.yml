@@ -1,4 +1,6 @@
 all:
+  vars:
+    kube_controller_manager_cluster_cidr: 192.168.0.0/16
   children:
     hypervisor:
       hosts:
