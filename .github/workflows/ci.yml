@@ -45,5 +45,5 @@ jobs:
       if: always()
       with:
         name: kube-bench-reports
-        path: ~/kube-bench
+        path: ~/kube-bench/
         if-no-files-found: error
