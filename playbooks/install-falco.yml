@@ -1,0 +1,30 @@
+---
+- name: Install Falco
+  hosts: '*'
+  become: true
+  tasks:
+  - name: Set Arch Fact
+    ansible.builtin.command: dpkg --print-architecture
+    register: arch
+    changed_when: false
+  - name: Set Uname Fact
+    ansible.builtin.command: uname -r
+    register: uname
+    changed_when: false
+  - name: Install Kernel Headers
+    ansible.builtin.package:
+      name: linux-headers-{{ uname.stdout }}
+      state: present
+  - name: Install Falco Key
+    ansible.builtin.apt_key:
+      url: https://falco.org/repo/falcosecurity-3672BA8F.asc
+      state: present
+  - name: Add Falco Repo
+    ansible.builtin.apt_repository:
+      repo: deb https://download.falco.org/packages/deb stable main
+      state: present
+  - name: Install Falco
+    ansible.builtin.package:
+      update_cache: true
+      name: falco
+      state: present

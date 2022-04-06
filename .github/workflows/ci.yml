@@ -29,6 +29,9 @@ jobs:
     - name: 'Install and configure GVisor'
       timeout-minutes: 10
       run: make gvisor
+    - name: 'Install and configure falco'
+      timeout-minutes: 10
+      run: make falco
     # harden the security policy of the cluster
     - name: 'Fix Kube-Bench Findings'
       timeout-minutes: 15
