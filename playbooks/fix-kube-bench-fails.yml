@@ -45,6 +45,10 @@
       owner: "{{ username.stdout }}"
       group: "{{ username.stdout }}"
       mode: 0600
+  # TODO: update this and above to skip if no changes needed
+  - name: Apply PodSecurityPolicies
+    become: false
+    ansible.builtin.command: kubectl apply -f /tmp/pod-security-policies.yaml # noqa: no-changed-when
   - name: Render Compliant kube-apiserver.yaml
     ansible.builtin.template:
       src: ./templates/kube-apiserver.yaml.j2
@@ -73,17 +77,13 @@
       mode: 0600
       owner: root
       group: root
-  # TODO: update this and above to skip if no changes needed
-  - name: Apply PodSecurityPolicies
-    become: false
-    ansible.builtin.command: kubectl apply -f /tmp/pod-security-policies.yaml # noqa: no-changed-when
   # TODO only restart on change to kubelet config
   - name: Restart kubelet
     ansible.builtin.service:
       name: kubelet
       state: restarted
   - name: Ensure kubelet is in a running state
-    service:
+    ansible.builtin.service:
       name: kubelet
       state: started
     register: kubeletDetails
