@@ -84,8 +84,8 @@
       remote_src: true
       src: /etc/kubernetes/admin.conf
       dest: /root/.kube/config
-      owner: "{{ username.stdout }}"
-      group: "{{ username.stdout }}"
+      owner: root
+      group: root
       mode: 0600
   # TODO: version the calico install appropriately, use ansible modules
   - name: Install Calico Tigera Operator
