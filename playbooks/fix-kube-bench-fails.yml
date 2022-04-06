@@ -82,3 +82,11 @@
     ansible.builtin.service:
       name: kubelet
       state: restarted
+  - name: Ensure kubelet is in a running state
+    service:
+      name: kubelet
+      state: started
+    register: kubeletDetails
+    until: kubeletDetails.status.ActiveState == "active"
+    retries: 15
+    delay: 20
