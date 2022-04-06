@@ -71,6 +71,13 @@
       owner: "{{ username.stdout }}"
       group: "{{ username.stdout }}"
       mode: 0700
+  - name: Create .kube directory
+    ansible.builtin.file:
+      path: /root/.kube
+      state: directory
+      owner: root
+      group: root
+      mode: 0700
   - name: Copy Cluster Configuration
     ansible.builtin.copy:
       remote_src: true
