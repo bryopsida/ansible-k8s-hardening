@@ -4,6 +4,11 @@
   tasks:
   - name: Run kube-bench
     become: true
-    ansible.builtin.command: kube-bench --json --exit-code=1
+    ansible.builtin.command: kube-bench --json --outputfile=/tmp/kube-bench-report.json  --exit-code=1
     register: benchmarks
     changed_when: false
+  - name: Copy kube-bench-report
+    ansible.builtin.fetch:
+      src: /tmp/kube-bench-report.json
+      dest: ~/kube-bench/
+      mode: 0600

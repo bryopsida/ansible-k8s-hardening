@@ -36,8 +36,13 @@ jobs:
     #   run: make sysdig
     # - name: 'Install and configure AppArmor'
     #   run: make apparmor
-
     # - name: 'Install and configure Gatekeeper'
     #   run: make gatekeeper
     # - name: 'STIG it'
     #   run: make stig
+    - name: 'Upload Kube-Bench Report'
+      uses: actions/upload-artifact@v3
+      with:
+        name: kube-bench-reports
+        path: ~/kube-bench
+        if-no-files-found: error
