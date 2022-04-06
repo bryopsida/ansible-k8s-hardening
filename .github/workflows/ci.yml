@@ -16,17 +16,22 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: 'Install Ansible Plugins'
+      timeout-minutes: 2
       run: make install-plugins
     # verify the ansible connection
     - name: 'Get Hostname'
+      timeout-minutes: 2
       run: make hostname-check
     # Provision single node cluster with kubeadm
     - name: 'Provision Cluster'
+      timeout-minutes: 10
       run: make cluster
     - name: 'Install and configure GVisor'
+      timeout-minutes: 10
       run: make gvisor
     # harden the security policy of the cluster
     - name: 'Fix Kube-Bench Findings'
+      timeout-minutes: 15
       run: make cis-compliant
     # - name: 'Enable audit logging'
     #   run: make audit-logging
