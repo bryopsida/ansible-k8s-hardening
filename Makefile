@@ -23,7 +23,7 @@ fix-kube-bench-fails:
 	ansible-playbook -i inventory/$(inventory) playbooks/fix-kube-bench-fails.yml
 evaluate-kube-bench:
 	ansible-playbook -i inventory/$(inventory) playbooks/evaluate-kube-bench.yml
-cis-compliant: install-kube-bench fix-kube-bench-fails evaluate-kube-bench
+cis-compliant: install-kube-bench evaluate-kube-bench
 falco:
 	ansible-playbook -i inventory/$(inventory) playbooks/install-falco.yml
 gvisor:
