@@ -86,7 +86,7 @@
     ansible.builtin.service:
       name: kubelet
       state: started
-    register: kubeletDetails
-    until: kubeletDetails.status.ActiveState == "active"
+    register: kubelet_service
+    until: kubelet_service.status.ActiveState == "active"
     retries: 15
     delay: 20
