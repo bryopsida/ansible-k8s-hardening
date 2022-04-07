@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   annotations:
-    kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint: '{{ ansible_default_ipv4["address"] }}:6443'
+    kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint: '{{ kube_ip_address }}:6443'
   creationTimestamp: null
   labels:
     component: kube-apiserver
@@ -14,7 +14,7 @@ spec:
   - command:
     - kube-apiserver
     - --anonymous-auth=false
-    - --advertise-address={{ ansible_default_ipv4["address"] }}
+    - --advertise-address={{ kube_ip_address }}
     - --allow-privileged=true
     - --authorization-mode=Node,RBAC
     - --audit-policy-file=/etc/kubernetes/audit-log-policy/policy.yaml
@@ -54,7 +54,7 @@ spec:
     livenessProbe:
       failureThreshold: 8
       httpGet:
-        host: '{{ ansible_default_ipv4["address"] }}'
+        host: '{{ kube_ip_address }}'
         path: /livez
         port: 6443
         scheme: HTTPS
@@ -65,7 +65,7 @@ spec:
     readinessProbe:
       failureThreshold: 3
       httpGet:
-        host: '{{ ansible_default_ipv4["address"] }}'
+        host: '{{ kube_ip_address }}'
         path: /readyz
         port: 6443
         scheme: HTTPS
@@ -77,7 +77,7 @@ spec:
     startupProbe:
       failureThreshold: 24
       httpGet:
-        host: '{{ ansible_default_ipv4["address"] }}'
+        host: '{{ kube_ip_address }}'
         path: /livez
         port: 6443
         scheme: HTTPS

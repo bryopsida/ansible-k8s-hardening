@@ -9,6 +9,25 @@
     register: username
     changed_when: false
     become: false
+  - name: Get kube-apiserver.yaml
+    ansible.builtin.command: cat /etc/kubernetes/manifests/kube-apiserver.yaml
+    register: kube_apiserver_yaml
+    changed_when: false
+  - name: Get kube-controller-manager.yaml
+    ansible.builtin.command: cat /etc/kubernetes/manifests/kube-controller-manager.yaml
+    register: kube_controller_manager_yaml
+    changed_when: false
+  - name: Get kube-scheduler.yaml
+    ansible.builtin.command: cat /etc/kubernetes/manifests/kube-scheduler.yaml
+    register: kube_scheduler_yaml
+    changed_when: false
+  - name: Get kubelet.conf
+    ansible.builtin.command: cat /etc/kubernetes/kubelet.conf
+    register: kubelet_conf
+    changed_when: false
+  - name: Set Kube IP Address
+    ansible.builtin.set_fact:
+      kube_ip_address: "{{ (kube_apiserver_yaml.stdout | from_yaml).spec.containers[0].readinessProbe.httpGet.host }}"
   - name: Create etcd group
     ansible.builtin.group:
       name: etcd
