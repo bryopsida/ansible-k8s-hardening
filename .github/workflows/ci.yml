@@ -55,3 +55,10 @@ jobs:
         name: kube-bench-reports
         path: ~/kube-bench/
         if-no-files-found: error
+    - name: 'Upload Initial Configuration'
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: initial-config
+        path: ~/initial-config/
+        if-no-files-found: error
