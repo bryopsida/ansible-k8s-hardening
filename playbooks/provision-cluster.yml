@@ -106,15 +106,14 @@
       src: /etc/kubernetes/manifests/kube-apiserver.yaml
       dest: ~/initial_config/
   - name: Fetch Kubernetes Controller Manifest
-    ansible.builtin.fetch: 
+    ansible.builtin.fetch:
       src: /etc/kubernetes/manifests/kube-controller-manager.yaml
       dest: ~/initial_config/
   - name: Fetch Kubernetes Scheduler Manifest
-    ansible.builtin.fetch: 
+    ansible.builtin.fetch:
       src: /etc/kubernetes/manifests/kube-scheduler.yaml
       dest: ~/initial_config/
   - name: Fetch Kubernetes Kubelet Conf
-    ansible.builtin.fetch: 
+    ansible.builtin.fetch:
       src: /var/lib/kubelet/config.yaml
       dest: ~/initial_config/
-
