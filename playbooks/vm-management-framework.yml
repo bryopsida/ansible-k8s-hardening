@@ -8,6 +8,7 @@
         channel: latest/stable
         state: present
       when: "ansible_os_family == 'Debian'"
+      become: true
     - name: Install multipass from homebrew
       community.general.homebrew_cask:
         name: multipass
