@@ -59,6 +59,14 @@
         state: present
       when: "ansible_os_family == 'Debian'"
       become: true
+    - name: Set Unix Socket Permissions for multipass
+      ansible.builtin.file:
+        path: /var/snap/multipass/common/multipass_socket
+        state: file
+        owner: "{{ host_username.stdout }}"
+        group: "{{ host_user_group.stdout }}"
+      when: "ansible_os_family == 'Debian'"
+      become: true
     - name: Start multipass snap
       ansible.builtin.command: snap start multipass
       when: "ansible_os_family == 'Debian'"
