@@ -10,10 +10,6 @@
         - lxc
         - lxc-dev
       state: present
-  - name: Install python lxc Package
-    ansible.builtin.pip:
-      name: lxc-python3
-      state: present
   - name: Create Nodes
     ansible.builtin.lxc_container:
       name: '{{ item.name }}'
