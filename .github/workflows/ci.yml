@@ -10,6 +10,22 @@ jobs:
     - run: |
         make install-plugins
         make lint
+  kics-scan:
+    name: 'KICS scan'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v3
+    - name: run kics Scan
+      uses: checkmarx/kics-github-action@v1.4
+      with:
+        # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
+        path: './'
+        output_path: kics-reports/
+        output_format: 'sarif'
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: kics-reports/results.sarif
   kubeadm-multi-node:
     name: 'Kubeadm Multi Node'
     runs-on: 'ubuntu-latest'
