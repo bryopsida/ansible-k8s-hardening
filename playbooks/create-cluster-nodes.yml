@@ -8,6 +8,7 @@
       update_cache: true
       name:
         - lxc
+        - lxc-dev
       state: present
   - name: Install python lxc Package
     ansible.builtin.pip:
