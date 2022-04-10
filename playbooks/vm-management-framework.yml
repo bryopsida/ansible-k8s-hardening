@@ -62,6 +62,7 @@
     - name: Set multipass driver
       ansible.builtin.command: multipass set local.driver=lxd
       when: "ansible_os_family == 'Debian'"
+      become: true
     - name: Start multipass snap
       ansible.builtin.command: snap start multipass
       when: "ansible_os_family == 'Debian'"
