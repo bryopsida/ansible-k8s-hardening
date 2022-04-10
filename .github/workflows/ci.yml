@@ -34,6 +34,10 @@ jobs:
     - name: 'Install Ansible Plugins'
       timeout-minutes: 2
       run: make install-plugins
+    - name: 'Install VM Management Framework'
+      run: make vm-management-framework
+    - name: 'Create VM Nodes'
+      run: make nodes
     # verify the ansible connection
     - name: 'Get Hostname'
       timeout-minutes: 2
