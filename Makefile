@@ -9,8 +9,7 @@ install-plugins:
 	ansible-galaxy collection install ansible.posix
 	ansible-galaxy collection install community.kubernetes
 	ansible-galaxy collection install kubernetes.core
-	python3 -m pip install kubernetes
-	python3 -m pip install lxc-python2
+	python3 -m pip install kubernetes 
 lint:
 	pip3 install "ansible-lint"
 	ansible-lint playbooks/*.yml
