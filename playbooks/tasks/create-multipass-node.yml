@@ -11,6 +11,7 @@
     parser:
       name: ansible.utils.json
   register: vms
+  become: true
   changed_when: false
 - name: Log VM List Output
   ansible.builtin.debug:
@@ -52,6 +53,7 @@
       name: ansible.utils.json
   register: ip
   changed_when: false
+  become: true
 - name: Debug, print VM IP Address
   ansible.builtin.debug:
     msg: "{{ ip.parsed.info[item.name].ipv4[0] }}"
