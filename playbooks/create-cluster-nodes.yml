@@ -3,18 +3,6 @@
   hosts: hypervisor
   become: true
   tasks:
-  - name: Install Required Packages
-    ansible.builtin.package:
-      update_cache: true
-      name:
-        - lxc
-        - lxc-dev
-      state: present
-  - name: Create Nodes
-    ansible.builtin.lxc_container:
-      name: '{{ item.name }}'
-      container_log: true
-      template: '{{ item.template }}'
-      state: started
-      template_options: --release trusty
-    loop: "{{ nodes|flatten(levels=1) }}"
+  - name: Create Node
+    include_tasks: tasks/create-multipass-node.yml
+    loop: "{{ nodes|flatten(levels=1)  }}"

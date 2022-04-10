@@ -1,119 +1,121 @@
+# TODO: adjust to work with multi nodes
 ---
 - name: Provision Cluster
-  hosts: hypervisor
+  hosts:
+    - nodes
   become: true
   tasks:
-  - name: Get username
-    ansible.builtin.command: whoami
-    register: username
-    changed_when: false
-    become: false
-  - name: Install Base Packages
-    ansible.builtin.package:
-      update_cache: true
-      name:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - runc
-        - containerd
-        - bridge-utils
-      state: present
-  - name: Enable bridge net filter
-    community.general.modprobe:
-      name: br_netfilter
-      state: present
-  - name: Setup Ipv4 Forwarding
-    ansible.builtin.sysctl:
-      name: net.bridge.bridge-nf-call-iptables
-      value: 1
-      state: present
-  - name: Setup Ipv6 Forwarding
-    ansible.builtin.sysctl:
-      name: net.bridge.bridge-nf-call-ip6tables
-      value: 1
-      state: present
-  - name: Disable SWAP
-    ansible.builtin.command: swapoff -a # noqa no-changed-when
-  - name: Disable Mounting SWAP
-    ansible.builtin.replace:
-      path: /etc/fstab
-      regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-      replace: '# \1'
-  - name: Add Kube Repo Key
-    ansible.builtin.apt_key:
-      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-      keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
-      state: present
-  - name: Add Kube Repo
-    ansible.builtin.apt_repository:
-      repo: 'deb  [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main'
-      state: present
-  - name: Install Kubernetes Binaries
-    ansible.builtin.package:
-      update_cache: true
-      name:
-        - kubelet
-        - kubeadm
-        - kubectl
-      state: present
-  - name: Check if cluster already exists
-    ansible.builtin.stat:
-      path: /etc/kubernetes/admin.conf
-    register: k8s_cluster_init
-  - name: Initialize Kubernetes Cluster
-    ansible.builtin.command: kubeadm init --cri-socket /run/containerd/containerd.sock --pod-network-cidr=192.168.0.0/16
-    when: (not k8s_cluster_init.stat.exists)
-  - name: Create .kube directory
-    ansible.builtin.file:
-      path: /home/{{ username.stdout }}/.kube
-      state: directory
-      owner: "{{ username.stdout }}"
-      group: "{{ username.stdout }}"
-      mode: 0700
-  - name: Create .kube directory
-    ansible.builtin.file:
-      path: /root/.kube
-      state: directory
-      owner: root
-      group: root
-      mode: 0700
-  - name: Copy Cluster Configuration
-    ansible.builtin.copy:
-      remote_src: true
-      src: /etc/kubernetes/admin.conf
-      dest: /home/{{ username.stdout }}/.kube/config
-      owner: "{{ username.stdout }}"
-      group: "{{ username.stdout }}"
-      mode: 0600
-  - name: Copy Cluster Configuration For Root
-    ansible.builtin.copy:
-      remote_src: true
-      src: /etc/kubernetes/admin.conf
-      dest: /root/.kube/config
-      owner: root
-      group: root
-      mode: 0600
-  # TODO: version the calico install appropriately, use ansible modules
-  - name: Install Calico Tigera Operator
-    become: false
-    ansible.builtin.command: kubectl apply -f https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml # noqa no-changed-when
-  - name: Install Calico CRDS
-    become: false
-    ansible.builtin.command: kubectl apply -f https://projectcalico.docs.tigera.io/manifests/custom-resources.yaml # noqa no-changed-when
-  - name: Fetch Kubernetes Api Server Manifest
-    ansible.builtin.fetch:
-      src: /etc/kubernetes/manifests/kube-apiserver.yaml
-      dest: ~/initial-config/
-  - name: Fetch Kubernetes Controller Manifest
-    ansible.builtin.fetch:
-      src: /etc/kubernetes/manifests/kube-controller-manager.yaml
-      dest: ~/initial-config/
-  - name: Fetch Kubernetes Scheduler Manifest
-    ansible.builtin.fetch:
-      src: /etc/kubernetes/manifests/kube-scheduler.yaml
-      dest: ~/initial-config/
-  - name: Fetch Kubernetes Kubelet Conf
-    ansible.builtin.fetch:
-      src: /var/lib/kubelet/config.yaml
-      dest: ~/initial-config/
+    - name: Get username
+      ansible.builtin.command: whoami
+      register: username
+      changed_when: false
+      become: false
+    - name: Install Base Packages
+      ansible.builtin.package:
+        update_cache: true
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - runc
+          - containerd
+          - bridge-utils
+        state: present
+    - name: Enable bridge net filter
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
+    - name: Setup Ipv4 Forwarding
+      ansible.builtin.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+        state: present
+    - name: Setup Ipv6 Forwarding
+      ansible.builtin.sysctl:
+        name: net.bridge.bridge-nf-call-ip6tables
+        value: 1
+        state: present
+    - name: Disable SWAP
+      ansible.builtin.command: swapoff -a # noqa no-changed-when
+    - name: Disable Mounting SWAP
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+    - name: Add Kube Repo Key
+      ansible.builtin.apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+        state: present
+    - name: Add Kube Repo
+      ansible.builtin.apt_repository:
+        repo: 'deb  [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main'
+        state: present
+    - name: Install Kubernetes Binaries
+      ansible.builtin.package:
+        update_cache: true
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+    - name: Check if cluster already exists
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: k8s_cluster_init
+    - name: Initialize Kubernetes Cluster
+      ansible.builtin.command: kubeadm init --cri-socket /run/containerd/containerd.sock --pod-network-cidr=192.168.0.0/16
+      when: (not k8s_cluster_init.stat.exists)
+    - name: Create .kube directory
+      ansible.builtin.file:
+        path: /home/{{ username.stdout }}/.kube
+        state: directory
+        owner: "{{ username.stdout }}"
+        group: "{{ username.stdout }}"
+        mode: 0700
+    - name: Create .kube directory
+      ansible.builtin.file:
+        path: /root/.kube
+        state: directory
+        owner: root
+        group: root
+        mode: 0700
+    - name: Copy Cluster Configuration
+      ansible.builtin.copy:
+        remote_src: true
+        src: /etc/kubernetes/admin.conf
+        dest: /home/{{ username.stdout }}/.kube/config
+        owner: "{{ username.stdout }}"
+        group: "{{ username.stdout }}"
+        mode: 0600
+    - name: Copy Cluster Configuration For Root
+      ansible.builtin.copy:
+        remote_src: true
+        src: /etc/kubernetes/admin.conf
+        dest: /root/.kube/config
+        owner: root
+        group: root
+        mode: 0600
+    # TODO: version the calico install appropriately, use ansible modules
+    - name: Install Calico Tigera Operator
+      become: false
+      ansible.builtin.command: kubectl apply -f https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml # noqa no-changed-when
+    - name: Install Calico CRDS
+      become: false
+      ansible.builtin.command: kubectl apply -f https://projectcalico.docs.tigera.io/manifests/custom-resources.yaml # noqa no-changed-when
+    - name: Fetch Kubernetes Api Server Manifest
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/manifests/kube-apiserver.yaml
+        dest: ~/initial-config/
+    - name: Fetch Kubernetes Controller Manifest
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        dest: ~/initial-config/
+    - name: Fetch Kubernetes Scheduler Manifest
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/manifests/kube-scheduler.yaml
+        dest: ~/initial-config/
+    - name: Fetch Kubernetes Kubelet Conf
+      ansible.builtin.fetch:
+        src: /var/lib/kubelet/config.yaml
+        dest: ~/initial-config/

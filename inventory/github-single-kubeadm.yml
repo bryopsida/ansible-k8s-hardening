@@ -9,14 +9,22 @@ all:
         nodes:
         - name: k8s
           template: ubuntu
+          mem: 4G
+          cpus: 2
+          disk: 8G
       hosts:
         localhost:
          ansible_connection: local
-    masters:
+    nodes:
       hosts:
-        localhost:
-         ansible_connection: local
+        k8s:
+         vars:
+          roles:
+            - coordinator
+            - worker
     workers:
       hosts:
-        localhost:
-         ansible_connection: local
+        k8s:
+    coordinators:
+      hosts:
+        k8s:

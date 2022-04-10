@@ -1,0 +1,15 @@
+---
+- name: Apply VM Management Framework
+  hosts: hypervisor
+  tasks:
+    - name: Install multipass as a snap
+      community.general.snap:
+        name: multipass
+        channel: latest/stable
+        state: present
+      when: "ansible_os_family == 'Debian'"
+    - name: Install multipass from homebrew
+      community.general.homebrew_cask:
+        name: multipass
+        state: present
+      when: "ansible_os_family == 'Darwin'"

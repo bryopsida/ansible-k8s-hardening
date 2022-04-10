@@ -1,6 +1,7 @@
 ---
 - name: Get Kube Bench Results
-  hosts: '*'
+  hosts:
+  - nodes
   tasks:
   - name: Run kube-bench
     become: true

@@ -26,15 +26,6 @@ jobs:
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: kics-reports/results.sarif
-  kubeadm-multi-node:
-    name: 'Kubeadm Multi Node'
-    runs-on: 'ubuntu-latest'
-    env:
-      inventory: github-multi-kubeadm.yml
-    steps:
-    - uses: actions/checkout@v2
-    - name: 'Create nodes'
-      run: make nodes
   kubeadm-single-node:
     name: 'Kubeadm Single Node'
     runs-on: 'ubuntu-latest'

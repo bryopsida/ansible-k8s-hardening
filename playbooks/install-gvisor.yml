@@ -1,56 +1,58 @@
 ---
 - name: Install Gvisor
-  hosts: '*'
+  hosts:
+    - nodes
   become: true
   tasks:
-  - name: Set Arch Fact
-    ansible.builtin.command: dpkg --print-architecture
-    register: arch
-    changed_when: false
-  - name: Install Base Packages
-    ansible.builtin.package:
-      name:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg
-      state: present
-  # TODO: move to ansible packages
-  - name: Check for key
-    ansible.builtin.stat:
-      path: /usr/share/keyrings/gvisor-archive-keyring.gpg
-    register: key_stat
-  - name: Download Gvisor Key
-    ansible.builtin.get_url:
-      url: https://gvisor.dev/archive.key
-      dest: /tmp/gvisor-archive-keyring.gpg
-      mode: 0600
-    when: "not key_stat.stat.exists"
-  - name: Dearmor gvisor gpg key
-    ansible.builtin.shell: cat /tmp/gvisor-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/gvisor-archive-keyring.gpg # noqa: risky-shell-pipe
-    when: "not key_stat.stat.exists"
-  - name: Add Gvisor Repo
-    ansible.builtin.apt_repository:
-      repo: 'deb [arch={{ arch.stdout }} signed-by=/usr/share/keyrings/gvisor-archive-keyring.gpg] https://storage.googleapis.com/gvisor/releases release main'
-      state: present
-  - name: Install runsc
-    ansible.builtin.package:
-      update_cache: true
-      name: runsc
-      state: present
-  - name: Check Runtime Class
-    become: false
-    ansible.builtin.command: kubectl get runtimeclasses -o name
-    register: runtimeclass
-    changed_when: false
-  - name: Copy Runsc Runtime Class
-    become: false
-    ansible.builtin.copy:
-      src: ./files/gvisor.yml
-      dest: /tmp/gvisor.yml
-      mode: 0400
-    when: "'runtimeclass.node.k8s.io/gvisor' not in runtimeclass.stdout"
-  - name: Create gvisor runtime class
-    become: false
-    ansible.builtin.command: kubectl apply -f /tmp/gvisor.yml
-    when: "'runtimeclass.node.k8s.io/gvisor' not in runtimeclass.stdout"
+    - name: Set Arch Fact
+      ansible.builtin.command: dpkg --print-architecture
+      register: arch
+      changed_when: false
+    - name: Install Base Packages
+      ansible.builtin.package:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+    # TODO: move to ansible packages
+    - name: Check for key
+      ansible.builtin.stat:
+        path: /usr/share/keyrings/gvisor-archive-keyring.gpg
+      register: key_stat
+    - name: Download Gvisor Key
+      ansible.builtin.get_url:
+        url: https://gvisor.dev/archive.key
+        dest: /tmp/gvisor-archive-keyring.gpg
+        mode: 0600
+      when: "not key_stat.stat.exists"
+    - name: Dearmor gvisor gpg key # noqa: risky-shell-pipe
+      ansible.builtin.shell: |
+        cat /tmp/gvisor-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/gvisor-archive-keyring.gpg
+      when: "not key_stat.stat.exists"
+    - name: Add Gvisor Repo
+      ansible.builtin.apt_repository:
+        repo: 'deb [arch={{ arch.stdout }} signed-by=/usr/share/keyrings/gvisor-archive-keyring.gpg] https://storage.googleapis.com/gvisor/releases release main' # noqa: line-length
+        state: present
+    - name: Install runsc
+      ansible.builtin.package:
+        update_cache: true
+        name: runsc
+        state: present
+    - name: Check Runtime Class
+      become: false
+      ansible.builtin.command: kubectl get runtimeclasses -o name
+      register: runtimeclass
+      changed_when: false
+    - name: Copy Runsc Runtime Class
+      become: false
+      ansible.builtin.copy:
+        src: ./files/gvisor.yml
+        dest: /tmp/gvisor.yml
+        mode: 0400
+      when: "'runtimeclass.node.k8s.io/gvisor' not in runtimeclass.stdout"
+    - name: Create gvisor runtime class
+      become: false
+      ansible.builtin.command: kubectl apply -f /tmp/gvisor.yml
+      when: "'runtimeclass.node.k8s.io/gvisor' not in runtimeclass.stdout"

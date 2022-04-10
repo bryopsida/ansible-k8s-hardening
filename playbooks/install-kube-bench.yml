@@ -1,7 +1,8 @@
 # TODO: improve by being version aware as a variable, should take a version and ensure that version of kube-bench is installed
 ---
 - name: Install Kube-Bench
-  hosts: '*'
+  hosts:
+  - nodes
   tasks:
   - name: Gather package facts
     ansible.builtin.package_facts:

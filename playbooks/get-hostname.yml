@@ -1,8 +1,7 @@
 # get the hostname from all the hosts, use groups to filter out the masters and workers if not provisioned yet
 ---
 - name: Get Hostnames
-  hosts: hypervisor
-
+  hosts: all
   tasks:
   - name: Get Hostname
     ansible.builtin.command: hostname

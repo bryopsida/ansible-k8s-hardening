@@ -1,111 +1,112 @@
 # Fixes all kube-bench fails after a kubeadm init
 ---
-- name: Fix Kube-Bench Findings For Master Nodes
-  hosts: 'masters'
+- name: Fix Kube-Bench Findings For Coordinator Nodes
+  hosts:
+    - coordinators
   become: true
   tasks:
-  - name: Get username
-    ansible.builtin.command: whoami
-    register: username
-    changed_when: false
-    become: false
-  - name: Get kube-apiserver.yaml
-    ansible.builtin.command: cat /etc/kubernetes/manifests/kube-apiserver.yaml
-    register: kube_apiserver_yaml
-    changed_when: false
-  - name: Get kube-controller-manager.yaml
-    ansible.builtin.command: cat /etc/kubernetes/manifests/kube-controller-manager.yaml
-    register: kube_controller_manager_yaml
-    changed_when: false
-  - name: Get kube-scheduler.yaml
-    ansible.builtin.command: cat /etc/kubernetes/manifests/kube-scheduler.yaml
-    register: kube_scheduler_yaml
-    changed_when: false
-  - name: Get kubelet.conf
-    ansible.builtin.command: cat /etc/kubernetes/kubelet.conf
-    register: kubelet_conf
-    changed_when: false
-  - name: Set Kube IP Address
-    ansible.builtin.set_fact:
-      kube_ip_address: "{{ (kube_apiserver_yaml.stdout | from_yaml).spec.containers[0].readinessProbe.httpGet.host }}"
-  - name: Create etcd group
-    ansible.builtin.group:
-      name: etcd
-  - name: Create etcd user
-    ansible.builtin.user:
-      name: etcd
-      group: etcd
-    when: "'etcd' not in groups"
-  - name: Fix etcd folder ownership
-    ansible.builtin.file:
-      path: /var/lib/etcd
-      state: directory
-      owner: etcd
-      group: etcd
-      mode: 0600
-  - name: Create audit log policy directory
-    ansible.builtin.file:
-      path: /etc/kubernetes/audit-log-policy
-      state: directory
-      owner: root
-      group: root
-      mode: 0600
-  - name: Render audit-policy
-    ansible.builtin.template:
-      src: ./templates/audit-log-policy.yml.j2
-      dest: /etc/kubernetes/audit-log-policy/policy.yaml
-      owner: root
-      group: root
-      mode: 0600
-  - name: Render PodSecurityPolicies
-    ansible.builtin.template:
-      src: ./templates/pod-security-policies.yaml.j2
-      dest: /tmp/pod-security-policies.yaml
-      owner: "{{ username.stdout }}"
-      group: "{{ username.stdout }}"
-      mode: 0600
-  # TODO: update this and above to skip if no changes needed
-  - name: Apply PodSecurityPolicies
-    become: false
-    ansible.builtin.command: kubectl apply -f /tmp/pod-security-policies.yaml # noqa: no-changed-when
-  - name: Render Compliant kube-apiserver.yaml
-    ansible.builtin.template:
-      src: ./templates/kube-apiserver.yaml.j2
-      dest: /etc/kubernetes/manifests/kube-apiserver.yaml
-      mode: 0600
-      owner: root
-      group: root
-  - name: Render Compliant kube-controller-manager.yaml
-    ansible.builtin.template:
-      src: ./templates/kube-controller-manager.yaml.j2
-      dest: /etc/kubernetes/manifests/kube-controller-manager.yaml
-      mode: 0600
-      owner: root
-      group: root
-  - name: Render Compliant kube-scheduler.yaml
-    ansible.builtin.template:
-      src: ./templates/kube-scheduler.yaml.j2
-      dest: /etc/kubernetes/manifests/kube-scheduler.yaml
-      mode: 0600
-      owner: root
-      group: root
-  - name: Render Compliant kubelet config
-    ansible.builtin.template:
-      src: ./templates/kubelet.config.yaml.j2
-      dest: /var/lib/kubelet/config.yaml
-      mode: 0600
-      owner: root
-      group: root
-  # TODO only restart on change to kubelet config
-  - name: Restart kubelet
-    ansible.builtin.service:
-      name: kubelet
-      state: restarted
-  - name: Ensure kubelet is in a running state
-    ansible.builtin.service:
-      name: kubelet
-      state: started
-    register: kubelet_service
-    until: kubelet_service.status.ActiveState == "active"
-    retries: 15
-    delay: 20
+    - name: Get username
+      ansible.builtin.command: whoami
+      register: username
+      changed_when: false
+      become: false
+    - name: Get kube-apiserver.yaml
+      ansible.builtin.command: cat /etc/kubernetes/manifests/kube-apiserver.yaml
+      register: kube_apiserver_yaml
+      changed_when: false
+    - name: Get kube-controller-manager.yaml
+      ansible.builtin.command: cat /etc/kubernetes/manifests/kube-controller-manager.yaml
+      register: kube_controller_manager_yaml
+      changed_when: false
+    - name: Get kube-scheduler.yaml
+      ansible.builtin.command: cat /etc/kubernetes/manifests/kube-scheduler.yaml
+      register: kube_scheduler_yaml
+      changed_when: false
+    - name: Get kubelet.conf
+      ansible.builtin.command: cat /etc/kubernetes/kubelet.conf
+      register: kubelet_conf
+      changed_when: false
+    - name: Set Kube IP Address
+      ansible.builtin.set_fact:
+        kube_ip_address: "{{ (kube_apiserver_yaml.stdout | from_yaml).spec.containers[0].readinessProbe.httpGet.host }}"
+    - name: Create etcd group
+      ansible.builtin.group:
+        name: etcd
+    - name: Create etcd user
+      ansible.builtin.user:
+        name: etcd
+        group: etcd
+      when: "'etcd' not in groups"
+    - name: Fix etcd folder ownership
+      ansible.builtin.file:
+        path: /var/lib/etcd
+        state: directory
+        owner: etcd
+        group: etcd
+        mode: 0600
+    - name: Create audit log policy directory
+      ansible.builtin.file:
+        path: /etc/kubernetes/audit-log-policy
+        state: directory
+        owner: root
+        group: root
+        mode: 0600
+    - name: Render audit-policy
+      ansible.builtin.template:
+        src: ./templates/audit-log-policy.yml.j2
+        dest: /etc/kubernetes/audit-log-policy/policy.yaml
+        owner: root
+        group: root
+        mode: 0600
+    - name: Render PodSecurityPolicies
+      ansible.builtin.template:
+        src: ./templates/pod-security-policies.yaml.j2
+        dest: /tmp/pod-security-policies.yaml
+        owner: "{{ username.stdout }}"
+        group: "{{ username.stdout }}"
+        mode: 0600
+    # TODO: update this and above to skip if no changes needed
+    - name: Apply PodSecurityPolicies
+      become: false
+      ansible.builtin.command: kubectl apply -f /tmp/pod-security-policies.yaml # noqa: no-changed-when
+    - name: Render Compliant kube-apiserver.yaml
+      ansible.builtin.template:
+        src: ./templates/kube-apiserver.yaml.j2
+        dest: /etc/kubernetes/manifests/kube-apiserver.yaml
+        mode: 0600
+        owner: root
+        group: root
+    - name: Render Compliant kube-controller-manager.yaml
+      ansible.builtin.template:
+        src: ./templates/kube-controller-manager.yaml.j2
+        dest: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        mode: 0600
+        owner: root
+        group: root
+    - name: Render Compliant kube-scheduler.yaml
+      ansible.builtin.template:
+        src: ./templates/kube-scheduler.yaml.j2
+        dest: /etc/kubernetes/manifests/kube-scheduler.yaml
+        mode: 0600
+        owner: root
+        group: root
+    - name: Render Compliant kubelet config
+      ansible.builtin.template:
+        src: ./templates/kubelet.config.yaml.j2
+        dest: /var/lib/kubelet/config.yaml
+        mode: 0600
+        owner: root
+        group: root
+    # TODO only restart on change to kubelet config
+    - name: Restart kubelet
+      ansible.builtin.service:
+        name: kubelet
+        state: restarted
+    - name: Ensure kubelet is in a running state
+      ansible.builtin.service:
+        name: kubelet
+        state: started
+      register: kubelet_service
+      until: kubelet_service.status.ActiveState == "active"
+      retries: 15
+      delay: 20

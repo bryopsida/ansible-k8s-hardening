@@ -1,0 +1,109 @@
+---
+- name: Log VM creation start
+  ansible.builtin.debug:
+    msg: "About to create VM {{ item.name }}..."
+  tags:
+    - debug
+  changed_when: false
+- name: Check if VM exists
+  ansible.utils.cli_parse:
+    command: "multipass list --format json"
+    parser:
+      name: ansible.utils.json
+  register: vms
+  changed_when: false
+- name: Log VM List Output
+  ansible.builtin.debug:
+    msg: "{{ vms.parsed.list }}"
+  tags:
+    - debug
+  changed_when: false
+- name: Set VM Exists Fact
+  ansible.builtin.set_fact:
+    vm_exists: "{{ item.name in vms.parsed.list|map(attribute='name')|list }}"
+- name: Log VM Exists Fact
+  ansible.builtin.debug:
+    msg: "{{ vm_exists }}"
+  tags:
+    - debug
+  changed_when: false
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: ~/.ssh/{{ item.name }}
+  when: "not vm_exists"
+  become: false
+- name: Create cloud-init file for vm
+  ansible.builtin.template:
+    src: cloud-init.j2
+    mode: 0644
+    dest: /tmp/cloud-init-{{ item.name }}.yaml
+  when: "not vm_exists"
+  vars:
+    public_key: "{{ lookup('file', '~/.ssh/{{ item.name }}.pub') }}"
+- name: Create new VM
+  when: "not vm_exists"
+  ansible.builtin.command: |
+    multipass launch --disk {{ item.disk }} --cloud-init /tmp/cloud-init-{{ item.name }}.yaml --mem {{ item.mem }} --cpus {{ item.cpus }} --name {{ item.name }}
+- name: Get IP address of VM
+  ansible.utils.cli_parse:
+    command: "multipass info {{ item.name }} --format json"
+    parser:
+      name: ansible.utils.json
+  register: ip
+  changed_when: false
+- name: Debug, print VM IP Address
+  ansible.builtin.debug:
+    msg: "{{ ip.parsed.info[item.name].ipv4[0] }}"
+  tags:
+    - debug
+  changed_when: false
+- name: Set IP Address Fact
+  ansible.builtin.set_fact:
+    vm_ip_address: "{{ ip.parsed.info[item.name].ipv4[0] }}"
+  changed_when: false
+- name: Create /etc/hosts entry
+  ansible.builtin.lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item.name }}$'
+    line: "{{ vm_ip_address }} {{ item.name }}"
+    state: present
+- name: Get username
+  become: false
+  ansible.builtin.command: whoami
+  register: host_username
+  changed_when: false
+- name: Get user group
+  become: false
+  ansible.builtin.command: id -gn
+  register: host_user_group
+  changed_when: false
+- name: Add SSH Config Entry
+  community.general.ssh_config:
+    user: "{{ host_username.stdout }}"
+    group: "{{ host_user_group.stdout }}"
+    host: "{{ item.name }}"
+    remote_user: ansible
+    hostname: "{{ item.name }}"
+    identity_file: "~/.ssh/{{ item.name }}"
+    port: '22'
+    state: present
+  become: false
+- name: Make sure the known hosts file exists
+  become: false
+  ansible.builtin.file:
+    path: ~/.ssh/known_hosts
+    state: file
+    mode: 0600
+- name: Scan the public key
+  ansible.builtin.command: "ssh-keyscan -H {{ item.name }}"
+  register: vm_public_key
+  changed_when: false
+- name: Add the public key to the known hosts file
+  ansible.builtin.blockinfile:
+    path: "~/.ssh/known_hosts"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+    block: "{{ vm_public_key.stdout }}"
+  become: false
+- name: Log VM creation completion
+  ansible.builtin.debug:
+    msg: "Finished creating VM {{ item.name }}."
