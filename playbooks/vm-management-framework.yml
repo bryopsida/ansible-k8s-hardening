@@ -62,6 +62,7 @@
     - name: Start multipass snap
       ansible.builtin.command: snap start multipass
       when: "ansible_os_family == 'Debian'"
+      become: true
     - name: Install multipass from homebrew
       community.general.homebrew_cask:
         name: multipass
