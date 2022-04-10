@@ -7,16 +7,22 @@ all:
     hypervisor:
       vars:
         nodes:
-        - name: k8s
-          template: ubuntu
+          - name: master-01
+            template: ubuntu
+          - name: master-02
+            template: ubuntu
+          - name: worker-01
+            template: ubuntu
+          - name: worker-02
+            template: ubuntu
+          - name: worker-03
+            template: ubuntu
       hosts:
         localhost:
          ansible_connection: local
     masters:
       hosts:
         localhost:
-         ansible_connection: local
     workers:
       hosts:
         localhost:
-         ansible_connection: local

@@ -13,6 +13,8 @@ jobs:
   kubeadm-multi-node:
     name: 'Kubeadm Multi Node'
     runs-on: 'ubuntu-latest'
+    env:
+      inventory: github-multi-kubeadm.yml
     steps:
     - uses: actions/checkout@v2
     - name: 'Create nodes'
