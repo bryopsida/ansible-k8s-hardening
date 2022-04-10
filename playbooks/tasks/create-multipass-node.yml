@@ -11,7 +11,6 @@
     parser:
       name: ansible.utils.json
   register: vms
-  become: true
   changed_when: false
 - name: Log VM List Output
   ansible.builtin.debug:
@@ -45,7 +44,6 @@
   when: "not vm_exists"
   ansible.builtin.command: |
     multipass launch --disk {{ item.disk }} --cloud-init /tmp/cloud-init-{{ item.name }}.yaml --mem {{ item.mem }} --cpus {{ item.cpus }} --name {{ item.name }}
-  become: true
 - name: Get IP address of VM
   ansible.utils.cli_parse:
     command: "multipass info {{ item.name }} --format json"
@@ -53,7 +51,6 @@
       name: ansible.utils.json
   register: ip
   changed_when: false
-  become: true
 - name: Debug, print VM IP Address
   ansible.builtin.debug:
     msg: "{{ ip.parsed.info[item.name].ipv4[0] }}"
