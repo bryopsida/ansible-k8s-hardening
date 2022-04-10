@@ -1,0 +1,40 @@
+---
+- name: Provision Cluster Nodes
+  hosts: hypervisor
+  become: true
+  tasks:
+  - name: Create Master Node 1
+    ansible.builtin.lxc_container:
+      name: k8s-master-01
+      container_log: true
+      template: ubuntu
+      state: started
+      template_options: --release trusty
+  - name: Create Master Node 2
+    ansible.builtin.lxc_container:
+      name: k8s-master-02
+      container_log: true
+      template: ubuntu
+      state: started
+      template_options: --release trusty
+  - name: Create Worker Node 1
+    ansible.builtin.lxc_container:
+      name: k8s-worker-01
+      container_log: true
+      template: ubuntu
+      state: started
+      template_options: --release trusty
+  - name: Create Worker Node 2
+    ansible.builtin.lxc_container:
+      name: k8s-worker-02
+      container_log: true
+      template: ubuntu
+      state: started
+      template_options: --release trusty
+  - name: Create Worker Node 3
+    lxc_container:
+      name: k8s-worker-03
+      container_log: true
+      template: ubuntu
+      state: started
+      template_options: --release trusty
