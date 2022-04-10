@@ -12,7 +12,7 @@
       state: present
   - name: Install python lxc Package
     ansible.builtin.pip:
-      name: lxc-python2
+      name: lxc-python
       state: present
   - name: Create Master Node 1
     ansible.builtin.lxc_container:
