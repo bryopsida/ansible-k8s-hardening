@@ -42,14 +42,14 @@
   ansible.builtin.template:
     src: cloud-init.j2
     mode: 0644
-    dest: /tmp/cloud-init-{{ item.name }}.yaml
+    dest: cloud-init-{{ item.name }}.yaml
   when: "not vm_exists"
   vars:
     public_key: "{{ lookup('file', '~/.ssh/{{ item.name }}.pub') }}"
 - name: Create new VM
   when: "not vm_exists"
   ansible.builtin.command: |
-    multipass launch --disk {{ item.disk }} --cloud-init /tmp/cloud-init-{{ item.name }}.yaml --mem {{ item.mem }} --cpus {{ item.cpus }} --name {{ item.name }}
+    multipass launch --disk {{ item.disk }} --cloud-init cloud-init-{{ item.name }}.yaml --mem {{ item.mem }} --cpus {{ item.cpus }} --name {{ item.name }}
 - name: Get IP address of VM
   ansible.utils.cli_parse:
     command: "multipass info {{ item.name }} --format json"
