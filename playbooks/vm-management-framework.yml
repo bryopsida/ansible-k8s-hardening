@@ -59,6 +59,10 @@
         state: present
       when: "ansible_os_family == 'Debian'"
       become: true
+    - name: Connect multipass to lxd
+      ansible.builtin.command: snap connect multipass:lxd lxd
+      when: "ansible_os_family == 'Debian'"
+      become: true
     - name: Set multipass driver
       ansible.builtin.command: multipass set local.driver=lxd
       when: "ansible_os_family == 'Debian'"
