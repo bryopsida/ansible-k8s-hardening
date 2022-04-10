@@ -26,6 +26,7 @@
         owner: "{{ host_username.stdout }}"
         group: "{{ host_user_group.stdout }}"
       when: "ansible_os_family == 'Debian'"
+      become: true
     - name: "Initialize LXD" # noqa: risky-shell-pipe
       ansible.builtin.shell: |
         cat <<EOF | lxd init --preseed
