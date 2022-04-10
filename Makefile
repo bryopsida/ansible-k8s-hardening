@@ -2,6 +2,8 @@ inventory ?= github-single-kubeadm.yml
 PYTHON_VERSION ?= `python3 -c 'import platform; print(".".join(platform.python_version_tuple()[0:2]))'`
 EXTRA_ARGS ?= 
 
+install-ansible-macOs:
+	brew install ansible
 install-plugins:
 	ansible-galaxy collection install community.general
 	ansible-galaxy install stackhpc.libvirt-vm

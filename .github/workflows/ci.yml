@@ -31,6 +31,8 @@ jobs:
     runs-on: 'macos-latest'
     steps:
     - uses: actions/checkout@v2
+    - name: 'Install Ansible'
+      run: make install-ansible-macOs
     - name: 'Install Ansible Plugins'
       timeout-minutes: 2
       run: make install-plugins
