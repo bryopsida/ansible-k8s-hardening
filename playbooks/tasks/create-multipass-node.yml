@@ -27,6 +27,12 @@
   tags:
     - debug
   changed_when: false
+- name: Make sure .ssh directory exists
+  become: false
+  ansible.builtin.file:
+    path: ~/.ssh
+    state: directory
+    mode: 0700
 - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
   community.crypto.openssh_keypair:
     path: ~/.ssh/{{ item.name }}
@@ -88,12 +94,6 @@
     port: '22'
     state: present
   become: false
-- name: Make sure .ssh directory exists
-  become: false
-  ansible.builtin.file:
-    path: ~/.ssh
-    state: directory
-    mode: 0700
 - name: Make sure the known hosts file exists
   become: false
   ansible.builtin.file:
