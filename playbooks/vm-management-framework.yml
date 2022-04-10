@@ -2,6 +2,54 @@
 - name: Apply VM Management Framework
   hosts: hypervisor
   tasks:
+    - name: Get username
+      become: false
+      ansible.builtin.command: whoami
+      register: host_username
+      changed_when: false
+    - name: Get user group
+      become: false
+      ansible.builtin.command: id -gn
+      register: host_user_group
+      changed_when: false
+    - name: Install lxd as a snap
+      community.general.snap:
+        name: lxd
+        channel: latest/stable
+        state: present
+      when: "ansible_os_family == 'Debian'"
+      become: true
+    - name: Set Unix Socket Permissions for lxd
+      ansible.builtin.file:
+        state: file
+        owner: "{{ host_username.stdout }}"
+        group: "{{ host_user_group.stdout }}"
+      when: "ansible_os_family == 'Debian'"
+    - name: "Initialize LXD" # noqa: risky-shell-pipe
+      ansible.builtin.shell: |
+        cat <<EOF | lxd init --preseed
+        storage_pools:
+        - name: default
+          driver: dir
+        networks:
+        - name: lxdbr0
+          type: bridge
+          config:
+            ipv4.address: auto
+            ipv6.address: none
+        profiles:
+        - name: default
+          devices:
+            root:
+              path: /
+              pool: default
+              type: disk
+        EOF
+      when: "ansible_os_family == 'Debian'"
+    - name: Add LXD Bridge Network
+      ansible.builtin.shell: |
+        lxc profile device add default eth0 nic name=eth0 network=lxdbr0
+      when: "ansible_os_family == 'Debian'"
     - name: Install multipass as a snap
       community.general.snap:
         name: multipass
