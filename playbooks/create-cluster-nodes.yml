@@ -8,7 +8,6 @@
       update_cache: true
       name:
         - lxc
-        - python-lxc
       state: present
   - name: Create Master Node 1
     ansible.builtin.lxc_container:
