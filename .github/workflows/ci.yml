@@ -19,7 +19,7 @@ jobs:
       uses: checkmarx/kics-github-action@v1.4
       with:
         # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
-        path: './'
+        path: '${{ github.workspace }}'
         output_path: kics-reports
         output_formats: 'json,sarif'
     - name: Upload SARIF file
