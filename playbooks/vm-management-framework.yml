@@ -21,6 +21,7 @@
       become: true
     - name: Set Unix Socket Permissions for lxd
       ansible.builtin.file:
+        path: /var/snap/lxd/common/lxd/unix.socket
         state: file
         owner: "{{ host_username.stdout }}"
         group: "{{ host_user_group.stdout }}"
