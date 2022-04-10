@@ -10,6 +10,13 @@ jobs:
     - run: |
         make install-plugins
         make lint
+  kubeadm-multi-node:
+    name: 'Kubeadm Multi Node'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Create nodes'
+      run: make nodes
   kubeadm-single-node:
     name: 'Kubeadm Single Node'
     runs-on: 'ubuntu-latest'

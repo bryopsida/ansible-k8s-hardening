@@ -15,6 +15,11 @@ lint:
 	ansible-lint playbooks/*.yml
 hostname-check:
 	ansible-playbook -i inventory/$(inventory) playbooks/get-hostname.yml
+nodes:
+	sudo snap install multipass --classic
+	multipass launch --cpus 2 --memory 2048 --disk-size=8G --name=master-01 --image=ubuntu-18.04
+	multipass launch --cpus 2 --memory 2048 --disk-size=8G --name=worker-01 --image=ubuntu-18.04
+	multipass launch --cpus 2 --memory 2048 --disk-size=8G --name=worker-02 --image=ubuntu-18.04
 cluster:
 	ansible-playbook -i inventory/$(inventory) playbooks/provision-cluster.yml
 install-kube-bench:
