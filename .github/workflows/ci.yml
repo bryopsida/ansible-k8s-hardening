@@ -28,7 +28,7 @@ jobs:
         sarif_file: kics-reports/results.sarif
   kubeadm-single-node:
     name: 'Kubeadm Single Node'
-    runs-on: 'ubuntu-latest'
+    runs-on: 'macos-latest'
     steps:
     - uses: actions/checkout@v2
     - name: 'Install Ansible Plugins'
