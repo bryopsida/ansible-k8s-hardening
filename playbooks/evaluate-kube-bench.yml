@@ -5,7 +5,7 @@
   tasks:
   - name: Run kube-bench
     become: true
-    ansible.builtin.command: kube-bench --json --outputfile=/tmp/kube-bench-report.json  --exit-code=1 --alsologtostderr -v=4
+    ansible.builtin.command: kube-bench --json --outputfile=/tmp/kube-bench-report.json  --exit-code=1
     register: benchmarks
     changed_when: false
 
