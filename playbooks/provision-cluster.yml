@@ -27,10 +27,15 @@
         state: present
     - name: Setup Ipv4 Forwarding
       ansible.builtin.sysctl:
+        value: 1
+        name: net.ipv4.ip_forward
+        state: present
+    - name: Setup Ipv4 Bridge NF Call Tables
+      ansible.builtin.sysctl:
         name: net.bridge.bridge-nf-call-iptables
         value: 1
         state: present
-    - name: Setup Ipv6 Forwarding
+    - name: Setup Ipv6 Bridge NF Call Tables
       ansible.builtin.sysctl:
         name: net.bridge.bridge-nf-call-ip6tables
         value: 1
