@@ -27,8 +27,12 @@ jobs:
       with:
         sarif_file: kics-reports/results.sarif
   kubeadm-single-node:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
     name: 'Kubeadm Single Node'
-    runs-on: 'macos-latest'
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - name: 'Install Ansible'
